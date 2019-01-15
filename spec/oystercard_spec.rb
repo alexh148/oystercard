@@ -3,11 +3,17 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:station) {double :station}
+  let(:entry_station) {double :station}
+  let(:exit_station) {double :station}
+  let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
 
-  describe '#initialize' do
-    it 'should initialize with a balance of zero' do
+  describe 'defaults' do
+    it 'should have a balance of zero' do
       expect(subject.balance).to eq(0)
+    end
+
+    it 'should have an empty journeys array' do
+      expect(subject.journeys).to be_empty
     end
   end
 
@@ -27,41 +33,62 @@ describe Oystercard do
   describe '#touch_in' do
     it "should update a card as 'in use' when touching in" do
       subject.top_up(5)
-      subject.touch_in(:station)
+      subject.touch_in(entry_station)
       expect(subject.in_journey?).to eq true
     end
 
     it 'should raise an error if we try to touch in without the minimum balance' do
-      expect { subject.touch_in(:station) }.to raise_error 'Cannot touch in: Not enough funds'
+      expect { subject.touch_in(entry_station) }.to raise_error 'Cannot touch in: Not enough funds'
     end
   end
 
   describe '#touch_out' do
     it "should update a card as 'not in use' when touching out" do
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject.in_journey?).to eq false
     end
 
     it 'should set the entry station to nil' do
       subject.top_up(5)
-      subject.touch_in(:station)
-      subject.touch_out
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
       expect(subject.entry_station).to eq nil
     end
 
     it 'should deduct the fare from the card' do
       subject.top_up(5)
-      subject.touch_in(:station)
-      expect { subject.touch_out }.to change{ subject.balance }.by(-1)
+      subject.touch_in(entry_station)
+      expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by(-1)
     end
   end
 
   describe '#entry_station' do
-    it 'expected to respond to entry_station' do
+    it 'expected to return the entry station when called' do
       subject.top_up(5)
-      subject.touch_in(:station)
-      expect(subject.entry_station).to eq (:station)
+      subject.touch_in(entry_station)
+      expect(subject.entry_station).to eq entry_station
     end
   end
 
+  describe '#exit_station' do
+    it 'expected to return the exit station when called' do
+      subject.top_up(5)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.exit_station).to eq exit_station
+    end
+  end
+
+  describe '#journeys' do
+    it 'should respond to journeys' do
+      expect(subject).to respond_to(:journeys)
+    end
+
+    it 'should return a journey array with a journey' do
+      subject.top_up(5)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journeys).to eq [journey]
+    end
+  end
 end

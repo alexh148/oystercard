@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 describe 'user_stories' do
-  # In order to use public transport
-  # As a customer
-  # I want money on my card
+  before(:each) do
+    @newcard = Oystercard.new
+    @newcard.top_up(5)
 
-  it 'should have money on the oystercard' do
-    newcard = Oystercard.new
-    expect(newcard.balance).to eq(0)
   end
 
   # In order to keep using public transport
@@ -15,9 +12,7 @@ describe 'user_stories' do
   # I want to add money to my card
 
   it 'should return the new balance after topping up' do
-    newcard = Oystercard.new
-    newcard.top_up(5)
-    expect(newcard.balance).to eq(5)
+    expect(@newcard.balance).to eq(5)
   end
 
   # In order to protect my money
@@ -26,9 +21,8 @@ describe 'user_stories' do
 
   it 'should not allow the customer to top up over Maximum balance' do
     msg = "Max balance £#{Oystercard::MAX_BALANCE} will be exceeded"
-    newcard = Oystercard.new
-    newcard.top_up(87)
-    expect { newcard.top_up(5) }.to raise_error msg
+    @newcard.top_up(82)
+    expect { @newcard.top_up(5) }.to raise_error msg
   end
 
   # In order to pay for my journey
@@ -40,18 +34,14 @@ describe 'user_stories' do
   # I need to touch in and out
 
   it "should update a card as 'in use' when touching in" do
-    newcard = Oystercard.new
-    newcard.top_up(5)
-    newcard.touch_in('Waterloo')
-    expect(newcard.in_journey?).to eq true
+    @newcard.touch_in('Waterloo')
+    expect(@newcard.in_journey?).to eq true
   end
 
   it "should update a card as 'not in use' when touching in" do
-    newcard = Oystercard.new
-    newcard.top_up(5)
-    newcard.touch_in('Waterloo')
-    newcard.touch_out
-    expect(newcard.in_journey?).to eq false
+    @newcard.touch_in('Waterloo')
+    @newcard.touch_out('Southwark')
+    expect(@newcard.in_journey?).to eq false
   end
 
   #
@@ -69,10 +59,8 @@ describe 'user_stories' do
   # When my journey is complete, I need the correct amount deducted from my card
 
   it 'should deduct the minimum fare when completing journey' do
-    newcard = Oystercard.new
-    newcard.top_up(5)
-    newcard.touch_in('Waterloo')
-    expect { newcard.touch_out }.to change{ newcard.balance }.by(-1)
+    @newcard.touch_in('Waterloo')
+    expect { @newcard.touch_out('Southwark') }.to change{ @newcard.balance }.by(-1)
   end
 
   # In order to pay for my journey
@@ -80,9 +68,17 @@ describe 'user_stories' do
   # I need to know where I've travelled from
 
   it 'should tell me which station i have travelled from' do
-    newcard = Oystercard.new
-    newcard.top_up(5)
-    newcard.touch_in('Waterloo')
-    expect(newcard.entry_station).to eq('Waterloo')
+    @newcard.touch_in('Waterloo')
+    expect(@newcard.entry_station).to eq('Waterloo')
+  end
+
+  # In order to know where I have been
+  # As a customer
+  # I want to see all my previous trips
+
+  it 'should return all of the previous trips' do
+    @newcard.touch_in('Waterloo')
+    @newcard.touch_out('Southwark')
+    expect(@newcard.journeys).to eq [{entry_station: 'Waterloo', exit_station: 'Southwark'}]
   end
 end
