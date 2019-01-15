@@ -1,10 +1,12 @@
 # frozen_string_literal: true
+require 'oystercard'
+require 'station'
 
 describe 'user_stories' do
   before(:each) do
     @newcard = Oystercard.new
     @newcard.top_up(5)
-
+    @station = Station.new('Waterloo', 'Zone 1')
   end
 
   # In order to keep using public transport
@@ -80,5 +82,14 @@ describe 'user_stories' do
     @newcard.touch_in('Waterloo')
     @newcard.touch_out('Southwark')
     expect(@newcard.journeys).to eq [{entry_station: 'Waterloo', exit_station: 'Southwark'}]
+  end
+
+  # In order to know how far I have travelled
+  # As a customer
+  # I want to know what zone a station is in
+
+  it 'should know what zone a station is in' do
+    expect(@station.zone).to eq 'Zone 1'
+    expect(@station.name).to eq 'Waterloo'
   end
 end
