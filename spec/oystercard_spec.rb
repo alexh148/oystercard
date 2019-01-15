@@ -22,13 +22,6 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it 'should allow a value to be deducted from the card' do
-      subject.top_up(5)
-      expect { subject.deduct 2 }.to change { subject.balance }.by(-2)
-    end
-  end
-
   describe '#touch_in' do
     it "should update a card as 'in use' when touching in" do
       subject.top_up(5)
@@ -45,6 +38,12 @@ describe Oystercard do
     it "should update a card as ' not in use' when touching out" do
       subject.touch_out
       expect(subject.in_journey?).to eq false
+    end
+
+    it 'should deduct the fare from the card' do
+      subject.top_up(5)
+      subject.touch_in
+      expect { subject.touch_out }.to change{ subject.balance }.by(-1)
     end
   end
 end

@@ -9,6 +9,7 @@ class Oystercard
   def initialize
     @in_use = false
     @balance = 0
+    @fare = 1
   end
 
   def top_up(value)
@@ -17,16 +18,13 @@ class Oystercard
     @balance += value
   end
 
-  def deduct(value)
-    @balance -= value
-  end
-
   def touch_in
     raise 'Cannot touch in: Not enough funds' if balance < MIN_BALANCE
     @in_use = true
   end
 
   def touch_out
+    deduct
     @in_use = false
   end
 
@@ -38,6 +36,10 @@ class Oystercard
 
   def max_reached?(value)
     @balance + value > MAX_BALANCE
+  end
+
+  def deduct
+    @balance -= @fare
   end
 
 end
