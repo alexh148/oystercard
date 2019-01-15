@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# This is a Station class
 class Station
   attr_reader :name, :zone
 

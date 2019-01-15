@@ -1,12 +1,13 @@
 # frozen_string_literal: true
+
 require 'oystercard'
 require 'station'
 
 describe 'user_stories' do
+  let(:newcard) { Oystercard.new }
+  let(:station) { Station.new('Waterloo', 1) }
   before(:each) do
-    @newcard = Oystercard.new
-    @newcard.top_up(5)
-    @station = Station.new('Waterloo', 'Zone 1')
+    newcard.top_up(5)
   end
 
   # In order to keep using public transport
@@ -14,7 +15,7 @@ describe 'user_stories' do
   # I want to add money to my card
 
   it 'should return the new balance after topping up' do
-    expect(@newcard.balance).to eq(5)
+    expect(newcard.balance).to eq(5)
   end
 
   # In order to protect my money
@@ -23,8 +24,8 @@ describe 'user_stories' do
 
   it 'should not allow the customer to top up over Maximum balance' do
     msg = "Max balance £#{Oystercard::MAX_BALANCE} will be exceeded"
-    @newcard.top_up(82)
-    expect { @newcard.top_up(5) }.to raise_error msg
+    newcard.top_up(82)
+    expect { newcard.top_up(5) }.to raise_error msg
   end
 
   # In order to pay for my journey
@@ -36,14 +37,14 @@ describe 'user_stories' do
   # I need to touch in and out
 
   it "should update a card as 'in use' when touching in" do
-    @newcard.touch_in('Waterloo')
-    expect(@newcard.in_journey?).to eq true
+    newcard.touch_in('Waterloo')
+    expect(newcard.in_journey?).to eq true
   end
 
   it "should update a card as 'not in use' when touching in" do
-    @newcard.touch_in('Waterloo')
-    @newcard.touch_out('Southwark')
-    expect(@newcard.in_journey?).to eq false
+    newcard.touch_in('Waterloo')
+    newcard.touch_out('Southwark')
+    expect(newcard.in_journey?).to eq false
   end
 
   #
@@ -51,9 +52,10 @@ describe 'user_stories' do
   # As a customer
   # I need to have the minimum amount for a single journey
 
-  it 'should raise an error if we try to touch in without the minimum balance' do
-    newcard = Oystercard.new
-    expect { newcard.touch_in('Waterloo') }.to raise_error 'Cannot touch in: Not enough funds'
+  it 'should raise an error if touching in without the minimum balance' do
+    msg = 'Cannot touch in: Not enough funds'
+    newcard2 = Oystercard.new
+    expect { newcard2.touch_in('Waterloo') }.to raise_error msg
   end
 
   # In order to pay for my journey
@@ -61,8 +63,8 @@ describe 'user_stories' do
   # When my journey is complete, I need the correct amount deducted from my card
 
   it 'should deduct the minimum fare when completing journey' do
-    @newcard.touch_in('Waterloo')
-    expect { @newcard.touch_out('Southwark') }.to change{ @newcard.balance }.by(-1)
+    newcard.touch_in('Waterloo')
+    expect { newcard.touch_out('Old St') }.to change { newcard.balance }.by(-1)
   end
 
   # In order to pay for my journey
@@ -70,8 +72,8 @@ describe 'user_stories' do
   # I need to know where I've travelled from
 
   it 'should tell me which station i have travelled from' do
-    @newcard.touch_in('Waterloo')
-    expect(@newcard.entry_station).to eq('Waterloo')
+    newcard.touch_in('Waterloo')
+    expect(newcard.entry_station).to eq('Waterloo')
   end
 
   # In order to know where I have been
@@ -79,9 +81,9 @@ describe 'user_stories' do
   # I want to see all my previous trips
 
   it 'should return all of the previous trips' do
-    @newcard.touch_in('Waterloo')
-    @newcard.touch_out('Southwark')
-    expect(@newcard.journeys).to eq [{entry_station: 'Waterloo', exit_station: 'Southwark'}]
+    newcard.touch_in('Waterloo')
+    newcard.touch_out('Southwark')
+    expect(newcard.journeys).to eq [{ entry_station: 'Waterloo', exit_station: 'Southwark' }]
   end
 
   # In order to know how far I have travelled
@@ -89,7 +91,7 @@ describe 'user_stories' do
   # I want to know what zone a station is in
 
   it 'should know what zone a station is in' do
-    expect(@station.zone).to eq 'Zone 1'
-    expect(@station.name).to eq 'Waterloo'
+    expect(station.zone).to eq 1
+    expect(station.name).to eq 'Waterloo'
   end
 end

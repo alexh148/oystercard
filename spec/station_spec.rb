@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'station'
 
 describe Station do
   describe '#defaults' do
-    let (:station) {Station.new('Waterloo', 'Zone 1')}
+    let(:station) { Station.new('Waterloo', 1) }
 
-    it 'should have a name' do
-      expect(station).to respond_to(:name)
+    it 'should return its name' do
+      expect(station.name).to eq('Waterloo')
     end
 
-    it 'should have a zone' do
-      expect(station).to respond_to(:zone)
+    it 'should return its zone' do
+      expect(station.zone).to eq(1)
     end
   end
 end
