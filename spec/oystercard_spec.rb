@@ -29,11 +29,15 @@ describe Oystercard do
     end
   end
 
-
   describe '#touch_in' do
     it "should update a card as 'in use' when touching in" do
+      subject.top_up(5)
       subject.touch_in
       expect(subject.in_journey?).to eq true
+    end
+
+    it 'should raise an error if we try to touch in without the minimum balance' do
+      expect { subject.touch_in }.to raise_error 'Cannot touch in: Not enough funds'
     end
   end
 
