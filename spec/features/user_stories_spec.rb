@@ -42,14 +42,14 @@ describe 'user_stories' do
   it "should update a card as 'in use' when touching in" do
     newcard = Oystercard.new
     newcard.top_up(5)
-    newcard.touch_in
+    newcard.touch_in('Waterloo')
     expect(newcard.in_journey?).to eq true
   end
 
   it "should update a card as 'not in use' when touching in" do
     newcard = Oystercard.new
     newcard.top_up(5)
-    newcard.touch_in
+    newcard.touch_in('Waterloo')
     newcard.touch_out
     expect(newcard.in_journey?).to eq false
   end
@@ -61,7 +61,7 @@ describe 'user_stories' do
 
   it 'should raise an error if we try to touch in without the minimum balance' do
     newcard = Oystercard.new
-    expect { newcard.touch_in }.to raise_error 'Cannot touch in: Not enough funds'
+    expect { newcard.touch_in('Waterloo') }.to raise_error 'Cannot touch in: Not enough funds'
   end
 
   # In order to pay for my journey
@@ -71,7 +71,18 @@ describe 'user_stories' do
   it 'should deduct the minimum fare when completing journey' do
     newcard = Oystercard.new
     newcard.top_up(5)
-    newcard.touch_in
+    newcard.touch_in('Waterloo')
     expect { newcard.touch_out }.to change{ newcard.balance }.by(-1)
+  end
+
+  # In order to pay for my journey
+  # As a customer
+  # I need to know where I've travelled from
+
+  it 'should tell me which station i have travelled from' do
+    newcard = Oystercard.new
+    newcard.top_up(5)
+    newcard.touch_in('Waterloo')
+    expect(newcard.entry_station).to eq('Waterloo')
   end
 end
