@@ -3,7 +3,7 @@ require 'journey'
 describe Journey do
   describe 'defaults' do
     it 'should store an empty current journey upon creation' do
-      expect(subject.current_journey).to eq({entry: nil, exit: nil})
+      expect(subject.current).to eq({entry: nil, exit: nil})
     end
   end
 
@@ -20,14 +20,14 @@ describe Journey do
   describe '#start' do
     it 'should set the entry station in current journey' do
       subject.start('station')
-      expect(subject.current_journey[:entry]).to eq 'station'
+      expect(subject.current[:entry]).to eq 'station'
     end
   end
 
   describe '#end' do
     it 'should set the exit station in current journey' do
       subject.end('station')
-      expect(subject.current_journey[:exit]).to eq 'station'
+      expect(subject.current[:exit]).to eq 'station'
     end
   end
 

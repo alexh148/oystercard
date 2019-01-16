@@ -73,7 +73,7 @@ describe 'user_stories' do
 
   it 'should tell me which station i have travelled from' do
     newcard.touch_in('Waterloo')
-    expect(newcard.journey.current_journey[:entry]).to eq('Waterloo')
+    expect(newcard.journey.current[:entry]).to eq('Waterloo')
   end
 
   # In order to know where I have been
@@ -83,7 +83,7 @@ describe 'user_stories' do
   it 'should return all of the previous trips' do
     newcard.touch_in('Waterloo')
     newcard.touch_out('Southwark')
-    expect(newcard.journey.history).to include ({ entry: 'Waterloo', exit: 'Southwark' })
+    expect(newcard.journeylog.history).to include ({ entry: 'Waterloo', exit: 'Southwark' })
   end
 
   # In order to know how far I have travelled

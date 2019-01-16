@@ -50,7 +50,7 @@ describe Oystercard do
       subject.top_up(5)
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.journey.current_journey[:entry]).to eq nil
+      expect(subject.journey.current[:entry]).to eq nil
     end
 
     it 'should deduct the fare from the card' do
