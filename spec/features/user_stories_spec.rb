@@ -73,7 +73,7 @@ describe 'user_stories' do
 
   it 'should tell me which station i have travelled from' do
     newcard.touch_in('Waterloo')
-    expect(newcard.entry_station).to eq('Waterloo')
+    expect(newcard.journey.current_journey[:entry]).to eq('Waterloo')
   end
 
   # In order to know where I have been
@@ -83,7 +83,7 @@ describe 'user_stories' do
   it 'should return all of the previous trips' do
     newcard.touch_in('Waterloo')
     newcard.touch_out('Southwark')
-    expect(newcard.journeys).to eq [{ entry_station: 'Waterloo', exit_station: 'Southwark' }]
+    expect(newcard.journey.history).to include ({ entry: 'Waterloo', exit: 'Southwark' })
   end
 
   # In order to know how far I have travelled
@@ -94,4 +94,13 @@ describe 'user_stories' do
     expect(station.zone).to eq 1
     expect(station.name).to eq 'Waterloo'
   end
+
+  # In order to be charged correctly
+  # As a customer
+  # I need a penalty charge deducted if I fail to touch in or out
+  #
+  # it 'should charge a penalty if I fail to touch in or out' do
+  #   journey = Journey.new
+  #
+  # end
 end

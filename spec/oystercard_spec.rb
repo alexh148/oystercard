@@ -5,16 +5,13 @@ require 'oystercard'
 describe Oystercard do
   let(:entry_station) { double :station }
   let(:exit_station) { double :station }
-  let(:journey) { { entry_station: entry_station, exit_station: exit_station } }
+  let(:journey) { { entry: entry_station, exit: exit_station } }
 
   describe 'defaults' do
     it 'should have a balance of zero' do
       expect(subject.balance).to eq(0)
     end
 
-    it 'should have an empty journeys array' do
-      expect(subject.journeys).to be_empty
-    end
   end
 
   describe '#top_up' do
@@ -53,7 +50,7 @@ describe Oystercard do
       subject.top_up(5)
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.entry_station).to eq nil
+      expect(subject.journey.current_journey[:entry]).to eq nil
     end
 
     it 'should deduct the fare from the card' do
@@ -63,33 +60,5 @@ describe Oystercard do
     end
   end
 
-  describe '#entry_station' do
-    it 'expected to return the entry station when called' do
-      subject.top_up(5)
-      subject.touch_in(entry_station)
-      expect(subject.entry_station).to eq entry_station
-    end
-  end
 
-  describe '#exit_station' do
-    it 'expected to return the exit station when called' do
-      subject.top_up(5)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject.exit_station).to eq exit_station
-    end
-  end
-
-  describe '#journeys' do
-    it 'should respond to journeys' do
-      expect(subject).to respond_to(:journeys)
-    end
-
-    it 'should return a journey array with a journey' do
-      subject.top_up(5)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject.journeys).to include journey
-    end
-  end
 end
