@@ -30,34 +30,34 @@ describe Oystercard do
   describe '#touch_in' do
     it "should update a card as 'in use' when touching in" do
       subject.top_up(5)
-      subject.touch_in(entry_station)
+      subject.touch_in('waterloo')
       expect(subject.in_journey?).to eq true
     end
 
     it 'should raise an error if touching in without the minimum balance' do
       msg = 'Cannot touch in: Not enough funds'
-      expect { subject.touch_in(entry_station) }.to raise_error msg
+      expect { subject.touch_in('waterloo') }.to raise_error msg
     end
   end
 
   describe '#touch_out' do
     it "should update a card as 'not in use' when touching out" do
-      subject.touch_out(exit_station)
+      subject.touch_out('waterloo')
       expect(subject.in_journey?).to eq false
     end
 
     it 'should set the entry station to nil' do
       subject.top_up(5)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
+      subject.touch_in('waterloo')
+      subject.touch_out('waterloo')
       expect(subject.journey.current[:entry]).to eq nil
     end
 
-    it 'should deduct the fare from the card' do
-      subject.top_up(5)
-      subject.touch_in(entry_station)
-      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-1)
-    end
+    # it 'should deduct the fare from the card' do
+    #   subject.top_up(5)
+    #   subject.touch_in(entry_station)
+    #   expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-1)
+    # end
   end
 
 

@@ -5,7 +5,7 @@ require 'station'
 
 describe 'user_stories' do
   let(:newcard) { Oystercard.new }
-  let(:station) { Station.new('Waterloo', 1) }
+  let(:station) { Station.new }
   before(:each) do
     newcard.top_up(5)
   end
@@ -43,7 +43,7 @@ describe 'user_stories' do
 
   it "should update a card as 'not in use' when touching in" do
     newcard.touch_in('Waterloo')
-    newcard.touch_out('Southwark')
+    newcard.touch_out('waterloo')
     expect(newcard.in_journey?).to eq false
   end
 
@@ -64,7 +64,7 @@ describe 'user_stories' do
 
   it 'should deduct the minimum fare when completing journey' do
     newcard.touch_in('Waterloo')
-    expect { newcard.touch_out('Old St') }.to change { newcard.balance }.by(-1)
+    expect { newcard.touch_out('waterloo') }.to change { newcard.balance }.by(-1)
   end
 
   # In order to pay for my journey
@@ -73,7 +73,7 @@ describe 'user_stories' do
 
   it 'should tell me which station i have travelled from' do
     newcard.touch_in('Waterloo')
-    expect(newcard.journey.current[:entry]).to eq('Waterloo')
+    expect(newcard.journey.current[:entry]).to eq(:waterloo)
   end
 
   # In order to know where I have been
@@ -82,8 +82,8 @@ describe 'user_stories' do
 
   it 'should return all of the previous trips' do
     newcard.touch_in('Waterloo')
-    newcard.touch_out('Southwark')
-    expect(newcard.journeylog.history).to include ({ entry: 'Waterloo', exit: 'Southwark' })
+    newcard.touch_out('waterloo')
+    expect(newcard.journeylog.history).to include ({:entry => :waterloo, :exit => :waterloo})
   end
 
   # In order to know how far I have travelled
@@ -91,16 +91,40 @@ describe 'user_stories' do
   # I want to know what zone a station is in
 
   it 'should know what zone a station is in' do
-    expect(station.zone).to eq 1
-    expect(station.name).to eq 'Waterloo'
+    expect(station.get_zone(:old_street)).to eq 2
   end
 
   # In order to be charged correctly
   # As a customer
   # I need a penalty charge deducted if I fail to touch in or out
-  #
-  # it 'should charge a penalty if I fail to touch in or out' do
-  #   journey = Journey.new
-  #
-  # end
+
+  it 'should deduct a penalty charge if touch in without touching out' do
+    newcard.top_up(15)
+    newcard.touch_in('Waterloo')
+    newcard.touch_in('Waterloo')
+    expect(newcard.balance).to eq 14
+  end
+
+  it 'should deduct a penalty charge if touch out without touch in' do
+    newcard.top_up(15)
+    newcard.touch_out('Waterloo')
+    expect(newcard.balance).to eq 14
+  end
+
+  # In order to be charged the correct amount
+  # As a customer
+  # I need to have the correct fare calculated
+
+  describe 'should deduct the correct fare for the journey' do
+    it 'should deduct £1 if journey starts and ends in the same zone' do
+      newcard.touch_in("waterloo")
+      newcard.touch_out("waterloo")
+      expect(newcard.balance).to eq 4
+    end
+    it 'should calculate the correct far for journeys between zones' do
+      newcard.touch_in("waterloo")
+      newcard.touch_out("old street")
+      expect(newcard.balance).to eq 3
+    end
+  end
 end

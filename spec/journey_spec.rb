@@ -36,10 +36,17 @@ describe Journey do
       expect(subject.fare).to eq Journey::PENALTY_FARE
     end
 
-    it 'should return the minimum fare if there is an entry and exit station' do
-      subject.start('station')
-      subject.end('station')
-      expect(subject.fare).to eq Journey::MINIMUM_FARE
+    it 'should return the correct fare if the journey is completed' do
+      subject.start(:waterloo)
+      subject.end(:old_street)
+      expect(subject.fare).to eq 2
     end
+
+    it 'should charge £1 if the journey starts and ends in the same zone' do
+      subject.start(:waterloo)
+      subject.end(:waterloo)
+      expect(subject.fare).to eq 1
+    end
+
   end
 end
